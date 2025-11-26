@@ -88,7 +88,7 @@ export default function Review() {
                 </div>
                 {rating === 4 || rating === 5 ? (
                   <p className="mt-3 text-sm text-gray-600">
-                    Thank you! We've opened Google Reviews for you to leave your feedback.
+                    Thank you! We&apos;ve opened Google Reviews for you to leave your feedback.
                   </p>
                 ) : null}
               </div>
