@@ -2,12 +2,22 @@
  
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { logNavigationClick } from "@/lib/analytics";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [overHero, setOverHero] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
+    // If not on home page, set overHero to false
+    if (pathname !== '/') {
+      setOverHero(false);
+      return;
+    }
+
     const hero = document.getElementById("hero");
     if (!hero) {
       setOverHero(false);
@@ -24,9 +34,10 @@ export default function Navigation() {
 
     observer.observe(hero);
     return () => observer.disconnect();
-  }, []);
+  }, [pathname]);
 
   const scrollToSection = (sectionId: string) => {
+    logNavigationClick(sectionId, `#${sectionId}`);
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -47,24 +58,35 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <span
-              className={`text-2xl font-bold ${overHero ? "text-white" : "text-primary"}`}
+            <Link
+              href="/"
+              className={`text-2xl font-bold ${overHero ? "text-white" : "text-primary"} hover:opacity-80 transition-opacity`}
               data-testid="brand-logo"
             >
               Heier.Tech
-            </span>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <button
-                onClick={() => scrollToSection('hero')}
-                className={`${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-sm font-medium transition-colors`}
-                data-testid="nav-home"
-              >
-                Home
-              </button>
+              {pathname === '/' ? (
+                <button
+                  onClick={() => scrollToSection('hero')}
+                  className={`${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-sm font-medium transition-colors`}
+                  data-testid="nav-home"
+                >
+                  Home
+                </button>
+              ) : (
+                <Link
+                  href="/"
+                  className={`${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-sm font-medium transition-colors`}
+                  data-testid="nav-home"
+                >
+                  Home
+                </Link>
+              )}
               <button
                 onClick={() => scrollToSection('testimonials')}
                 className={`${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-sm font-medium transition-colors`}
@@ -79,13 +101,14 @@ export default function Navigation() {
               >
                 Packages
               </button>
-              <button
-                onClick={() => scrollToSection('software')}
+              <Link
+                href="/software"
+                onClick={() => logNavigationClick('nav_software', '/software')}
                 className={`${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-sm font-medium transition-colors`}
                 data-testid="nav-software"
               >
                 My Software
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -105,13 +128,24 @@ export default function Navigation() {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-border ${overHero ? 'bg-transparent' : ''}">
-              <button
-                onClick={() => scrollToSection('hero')}
-                className={`block ${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-base font-medium w-full text-left`}
-                data-testid="mobile-nav-home"
-              >
-                Home
-              </button>
+              {pathname === '/' ? (
+                <button
+                  onClick={() => scrollToSection('hero')}
+                  className={`block ${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-base font-medium w-full text-left`}
+                  data-testid="mobile-nav-home"
+                >
+                  Home
+                </button>
+              ) : (
+                <Link
+                  href="/"
+                  onClick={() => setIsOpen(false)}
+                  className={`block ${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-base font-medium w-full text-left`}
+                  data-testid="mobile-nav-home"
+                >
+                  Home
+                </Link>
+              )}
               <button
                 onClick={() => scrollToSection('testimonials')}
                 className={`block ${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-base font-medium w-full text-left`}
@@ -126,13 +160,17 @@ export default function Navigation() {
               >
                 Packages
               </button>
-              <button
-                onClick={() => scrollToSection('software')}
+              <Link
+                href="/software"
+                onClick={() => {
+                  logNavigationClick('mobile_nav_software', '/software');
+                  setIsOpen(false);
+                }}
                 className={`block ${overHero ? "text-white/80 hover:text-white" : "text-muted-foreground hover:text-foreground"} px-3 py-2 text-base font-medium w-full text-left`}
                 data-testid="mobile-nav-software"
               >
                 My Software
-              </button>
+              </Link>
             </div>
           </div>
         )}

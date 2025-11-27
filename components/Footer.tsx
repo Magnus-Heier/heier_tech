@@ -1,6 +1,7 @@
 "use client";
 
 import { Twitter, Linkedin, Github } from "lucide-react";
+import { logCTAClick, logNavigationClick } from "@/lib/analytics";
 
 const footerLinks = {
   services: [
@@ -20,7 +21,9 @@ const footerLinks = {
 export default function Footer() {
   const scrollToSection = (sectionId: string) => {
     if (sectionId.startsWith('#')) {
-      const element = document.getElementById(sectionId.substring(1));
+      const sectionName = sectionId.substring(1);
+      logNavigationClick(`footer_${sectionName}`, sectionId);
+      const element = document.getElementById(sectionName);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
@@ -41,6 +44,10 @@ export default function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logCTAClick('footer_social_twitter');
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="social-twitter"
               >
@@ -48,6 +55,10 @@ export default function Footer() {
               </a>
               <a
                 href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logCTAClick('footer_social_linkedin');
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="social-linkedin"
               >
@@ -55,6 +66,10 @@ export default function Footer() {
               </a>
               <a
                 href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logCTAClick('footer_social_github');
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 data-testid="social-github"
               >
@@ -87,6 +102,12 @@ export default function Footer() {
                 <li key={index}>
                   <a
                     href={link.href}
+                    onClick={(e) => {
+                      if (link.href === '#') {
+                        e.preventDefault();
+                      }
+                      logNavigationClick(`footer_company_${link.name.toLowerCase().replace(/\s+/g, '_')}`, link.href);
+                    }}
                     className="text-muted-foreground hover:text-foreground transition-colors"
                     data-testid={`footer-company-${index}`}
                   >

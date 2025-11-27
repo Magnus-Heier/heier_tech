@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Bot, Rocket, Code, Check } from "lucide-react";
+import { logCTAClick } from "@/lib/analytics";
 
 const packages = [
   {
@@ -47,6 +48,7 @@ const packages = [
 
 export default function Packages() {
   const handleLearnMore = (packageId: string) => {
+    logCTAClick('package_learn_more', { package_id: packageId });
     console.log(`Learn more about ${packageId}`);
   };
 

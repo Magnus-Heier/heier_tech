@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { logFormSubmission } from "@/lib/analytics";
 
 export default function Contact() {
   const { toast } = useToast();
@@ -37,6 +38,7 @@ export default function Contact() {
         const serverMsg = (data && data.error) ? String(data.error) : "Request failed";
         throw new Error(serverMsg);
       }
+      logFormSubmission('contact_form', { name, email });
       toast({
         title: "Message sent",
         description: "Thanks! I'll get back to you shortly.",

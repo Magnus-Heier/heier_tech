@@ -1,12 +1,15 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { logCTAClick } from "@/lib/analytics";
 
 export default function Hero() {
   const handleGetStarted = () => {
+    logCTAClick('hero_get_started');
     console.log('Get Started clicked');
   };
 
   const handleLearnMore = () => {
+    logCTAClick('hero_learn_more');
     const packagesSection = document.getElementById('packages');
     if (packagesSection) {
       packagesSection.scrollIntoView({ behavior: 'smooth' });

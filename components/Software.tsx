@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { BarChart3, ServerCog, Users, Shield, TrendingUp } from "lucide-react";
+import { logCTAClick } from "@/lib/analytics";
 
 const features = [
   {
@@ -28,10 +29,12 @@ const features = [
 
 export default function Software() {
   const handleTryHeierCore = () => {
+    logCTAClick('software_try_free');
     console.log('Try HeierCore Free clicked');
   };
 
   const handleViewDemo = () => {
+    logCTAClick('software_view_demo');
     console.log('View Demo clicked');
   };
 
