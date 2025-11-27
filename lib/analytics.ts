@@ -11,7 +11,7 @@ export interface EventData {
   user_agent?: string;
   ip?: string;
   user_id?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -82,7 +82,7 @@ export async function logEvent(eventData: EventData): Promise<void> {
  * Convenience function to log CTA clicks
  * Fire-and-forget - doesn't block execution
  */
-export function logCTAClick(ctaName: string, metadata?: Record<string, any>): void {
+export function logCTAClick(ctaName: string, metadata?: Record<string, unknown>): void {
   logEvent({
     event: 'cta_click',
     metadata: {
@@ -127,7 +127,7 @@ export function logNavigationClick(linkName: string, destination: string): void 
  * Convenience function to log form submissions
  * Fire-and-forget - doesn't block execution
  */
-export function logFormSubmission(formName: string, metadata?: Record<string, any>): void {
+export function logFormSubmission(formName: string, metadata?: Record<string, unknown>): void {
   logEvent({
     event: 'form_submission',
     metadata: {
