@@ -13,9 +13,12 @@ export default function Review() {
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   const handleStarClick = (value: number) => {
     setRating(value);
+    setError(""); // Clear error when rating changes
     
     // If 4 or 5 stars, redirect to Google review
     if (value === 4 || value === 5) {
@@ -23,18 +26,43 @@ export default function Review() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating > 0 && rating <= 3 && message.trim()) {
-      // Here you would typically send the feedback to your backend
-      console.log("Feedback submitted:", { rating, message });
-      setSubmitted(true);
-      // Reset form after a delay
-      setTimeout(() => {
-        setRating(0);
-        setMessage("");
-        setSubmitted(false);
-      }, 3000);
+      setIsSubmitting(true);
+      setError("");
+
+      try {
+        const response = await fetch("/api/bad-reviews", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            stars: rating,
+            message: message.trim(),
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to submit review");
+        }
+
+        setSubmitted(true);
+        // Reset form after a delay
+        setTimeout(() => {
+          setRating(0);
+          setMessage("");
+          setSubmitted(false);
+        }, 3000);
+      } catch (err) {
+        console.error("Error submitting review:", err);
+        setError(err instanceof Error ? err.message : "Failed to submit review. Please try again.");
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -110,13 +138,19 @@ export default function Review() {
                 </div>
               )}
 
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                  {error}
+                </div>
+              )}
+
               {rating > 0 && rating <= 3 && (
                 <Button
                   type="submit"
-                  disabled={!message.trim()}
+                  disabled={!message.trim() || isSubmitting}
                   className="w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send
+                  {isSubmitting ? "Sending..." : "Send"}
                 </Button>
               )}
             </form>

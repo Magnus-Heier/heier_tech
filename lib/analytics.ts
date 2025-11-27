@@ -56,7 +56,7 @@ export async function logEvent(eventData: EventData): Promise<void> {
       referer: referer,
       user_agent: user_agent,
       ip: ip,
-      user_id: eventData.user_id || 0,
+      user_id: eventData.user_id !== undefined ? eventData.user_id : 5,
       ...(eventData.metadata && { metadata: eventData.metadata })
     };
 
